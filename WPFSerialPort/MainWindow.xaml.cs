@@ -59,24 +59,20 @@ namespace WPFSerialPort
         // 수신 이벤트가 발생하면 이 부분이 실행된다.
         private void serialPort1_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            int ReceiveData = serialPort1.ReadByte();  //시리얼 버터에 수신된 데이타를 ReceiveData 읽어오기
-            if (ReceiveData == 0x12)
+            this.Dispatcher.BeginInvoke(new Action(() =>
             {
-                // 정상
-                int n = 10;
-            }
+                int ReceiveData = serialPort1.ReadByte();  //시리얼 버터에 수신된 데이타를 ReceiveData 읽어오기
 
-            richTextBox_received.Text = richTextBox_received.Text + string.Format("{0:X2}", ReceiveData);  //int 형식을 string형식으로 변환하여 출력
+                if (ReceiveData == 0x12)
+                {
+                    // 정상
+                    int inReceive = 10;
 
-           // this.Dispatcher.Invoke(new EventHandler(MySerialReceived));  //메인 쓰레드와 수신 쓰레드의 충돌 방지를 위해 Invoke 사용. MySerialReceived로 이동하여 추가 작업 실행.
+                    richTextBox_received.Text = inReceive.ToString();
+                }
+            }));
         }
 
-        //여기에서 수신 데이타를 사용자의 용도에 따라 처리한다.
-        private void MySerialReceived(object? sender, EventArgs e)
-        {
-            int ReceiveData = serialPort1.ReadByte();  //시리얼 버터에 수신된 데이타를 ReceiveData 읽어오기
-            richTextBox_received.Text = richTextBox_received.Text + string.Format("{0:X2}", ReceiveData);  //int 형식을 string형식으로 변환하여 출력
-        }
 
         private void deconnection_Click(object sender, RoutedEventArgs e)
         {
@@ -85,7 +81,6 @@ namespace WPFSerialPort
                 serialPort1.Close();  //시리얼포트 닫기
 
                 label_status.Text = "포트가 닫혔습니다.";
-                //comboBox_port.Enabled = true;  //COM포트설정 콤보박스 활성화
             }
             else  //시리얼포트가 닫혀 있으면
             {
